@@ -1,8 +1,6 @@
 package com.scheduleapp.service;
 
-import com.scheduleapp.dto.CreateScheduleRequest;
-import com.scheduleapp.dto.CreateScheduleResponse;
-import com.scheduleapp.dto.GetScheduleResponse;
+import com.scheduleapp.dto.*;
 import com.scheduleapp.entity.Schedule;
 import com.scheduleapp.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +15,7 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
+    //생성
     @Transactional
     public CreateScheduleResponse save(CreateScheduleRequest request) {
         Schedule schedule = scheduleRepository.save(new Schedule(
@@ -34,21 +33,45 @@ public class ScheduleService {
         );
     }
 
+    // 단건 조회
     @Transactional(readOnly = true)
     public GetScheduleResponse getOneSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("없는 스케줄 입니다.")
         );
-        return  GetScheduleResponse.from(schedule);
+        return GetScheduleResponse.from(schedule);
     }
 
+    // 전체조회
     @Transactional(readOnly = true)
     public List<GetScheduleResponse> getAllSchedule() {
         List<Schedule> schedules = scheduleRepository.findAll();
 
-        List<GetScheduleResponse> dtos = schedules.stream()
-                .map(schedule -> GetScheduleResponse.from(schedule)).toList();
-        return dtos;
+        return schedules.stream()
+                .map(GetScheduleResponse::from).toList();
+    }
+
+    // 수정
+    @Transactional
+    public UpdateScheduleResponse updateSchedule(Long scheduleId, UpdateScheduleRequest request) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalStateException("없는 스케줄 입니다.")
+        );
+        String title = request.getTitle() != null ? request.getTitle() : schedule.getTitle();
+        String writer = request.getWriter() != null ? request.getWriter() : schedule.getWriter();
+
+        schedule.update(title, writer);
+        return UpdateScheduleResponse.from(schedule);
+    }
+
+    // 삭제
+    @Transactional
+    public void deleteSchedule(Long scheduleId) {
+        boolean existence = scheduleRepository.existsById(scheduleId);
+        if (!existence) {
+            throw new IllegalStateException("없는 스케줄 입니다.");
+        }
+        scheduleRepository.deleteById(scheduleId);
     }
 
 }
