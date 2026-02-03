@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "schedule")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Schedule {
+public class Schedule extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class Schedule {
     private String password;
 
 
-    public Schedule(String title, String content, String writer, String password, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public Schedule(String title, String content, String writer, String password) {
         this.title = title;
         this.content = content;
         this.writer = writer;
@@ -30,7 +30,7 @@ public class Schedule {
 
     }
 
-    public void update(String title, String content, String writer, String password, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public void update(String title, String content, String writer, String password) {
         this.title = title;
         this.content = content;
         this.writer = writer;
