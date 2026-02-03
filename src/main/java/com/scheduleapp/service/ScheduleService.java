@@ -39,14 +39,7 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("없는 스케줄 입니다.")
         );
-        return new GetScheduleResponse(
-                schedule.getScheduleId(),
-                schedule.getTitle(),
-                schedule.getContent(),
-                schedule.getWriter(),
-                schedule.getCreatedAt(),
-                schedule.getModifiedAt()
-        );
+        return  GetScheduleResponse.from(schedule);
     }
 
     @Transactional(readOnly = true)
@@ -54,17 +47,9 @@ public class ScheduleService {
         List<Schedule> schedules = scheduleRepository.findAll();
 
         List<GetScheduleResponse> dtos = schedules.stream()
-                .map(dto -> new GetScheduleResponse(
-                        dto.getScheduleId(),
-                        dto.getTitle(),
-                        dto.getContent(),
-                        dto.getWriter(),
-                        dto.getCreatedAt(),
-                        dto.getModifiedAt()
-                )).toList();
+                .map(schedule -> GetScheduleResponse.from(schedule)).toList();
         return dtos;
     }
-
 
 }
 
