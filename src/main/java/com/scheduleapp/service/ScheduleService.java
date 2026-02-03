@@ -4,11 +4,11 @@ import com.scheduleapp.dto.CreateScheduleRequest;
 import com.scheduleapp.dto.CreateScheduleResponse;
 import com.scheduleapp.entity.Schedule;
 import com.scheduleapp.repository.ScheduleRepository;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Getter
+@Service
 @RequiredArgsConstructor
 public class ScheduleService {
 
