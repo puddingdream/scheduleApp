@@ -1,5 +1,6 @@
 package com.scheduleapp.dto;
 
+import com.scheduleapp.entity.Schedule;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,17 @@ public class CreateScheduleResponse {
         this.writer = writer;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
+    }
+
+    public static CreateScheduleResponse from(Schedule schedule) {
+        return new CreateScheduleResponse(
+                schedule.getScheduleId(),
+                schedule.getTitle(),
+                schedule.getContent(),
+                schedule.getWriter(),
+                schedule.getCreatedAt(),
+                schedule.getModifiedAt()
+        );
     }
 }
 

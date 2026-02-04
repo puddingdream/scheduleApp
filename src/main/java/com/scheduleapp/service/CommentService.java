@@ -26,18 +26,8 @@ public class CommentService {
         if (commentRepository.countBySchedule_ScheduleId(scheduleId)>=10) {
             throw new IllegalArgumentException("댓글은 10개까지만 가능");
         }
-          Comment comment = commentRepository.save(new Comment(
-                  request.getComment(),
-                  request.getWriter(),
-                  request.getPassword(),
-                  schedule));
-          return new CreateCommentResponse(
-                  comment.getCommentId(),
-                  comment.getComment(),
-                  comment.getWriter(),
-                  comment.getCreatedAt(),
-                  comment.getModifiedAt()
-          );
+          Comment comment = commentRepository.save( Comment.from(request,schedule));
+          return  CreateCommentResponse.from(comment);
     }
 
     private void validateCreateCommentRequest(CreateCommentRequest request) {

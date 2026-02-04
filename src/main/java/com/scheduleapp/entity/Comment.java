@@ -1,5 +1,6 @@
 package com.scheduleapp.entity;
 
+import com.scheduleapp.dto.CreateCommentRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,4 +33,12 @@ public class Comment extends BaseEntity {
         this.schedule = schedule;
     }
 
+    public static Comment from(CreateCommentRequest comment,Schedule schedule ) {
+        return new Comment(
+        comment.getComment(),
+                comment.getWriter(),
+                comment.getPassword(),
+                schedule
+        );
+    }
 }

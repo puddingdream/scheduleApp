@@ -21,20 +21,8 @@ public class ScheduleService {
     @Transactional
     public CreateScheduleResponse save(CreateScheduleRequest request) {
         validateCreateScheduleRequest(request);
-        Schedule schedule = scheduleRepository.save(new Schedule(
-                request.getTitle(),
-                request.getContent(),
-                request.getWriter(),
-                request.getPassword()));
-
-        return new CreateScheduleResponse(
-                schedule.getScheduleId(),
-                schedule.getTitle(),
-                schedule.getContent(),
-                schedule.getWriter(),
-                schedule.getCreatedAt(),
-                schedule.getModifiedAt()
-        );
+        Schedule schedule = scheduleRepository.save( Schedule.from(request));
+        return  CreateScheduleResponse.from(schedule);
     }
 
     // 단건 조회
