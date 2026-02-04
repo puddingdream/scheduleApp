@@ -17,11 +17,11 @@ public class CommnetController {
 
     private final CommentService commentService;
 
+    //댓글 생성
     @PostMapping("/schedules/{scheduleId}/comments")
     public ResponseEntity<CreateCommentResponse> createComment(
             @PathVariable Long scheduleId,
             @RequestBody CreateCommentRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.save(scheduleId,request));
     }
-
 }
