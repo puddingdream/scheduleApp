@@ -26,6 +26,14 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "scheduleId", nullable = false)
     private Schedule schedule;
 
+    public static Comment from(CreateCommentRequest comment,Schedule schedule ) {
+        return new Comment(
+                comment.getComment(),
+                comment.getWriter(),
+                comment.getPassword(),
+                schedule
+        );
+    }
     public Comment(String comment, String writer, String password , Schedule schedule) {
         this.comment = comment;
         this.writer = writer;
@@ -33,12 +41,5 @@ public class Comment extends BaseEntity {
         this.schedule = schedule;
     }
 
-    public static Comment from(CreateCommentRequest comment,Schedule schedule ) {
-        return new Comment(
-        comment.getComment(),
-                comment.getWriter(),
-                comment.getPassword(),
-                schedule
-        );
-    }
+
 }
