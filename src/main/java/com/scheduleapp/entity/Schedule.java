@@ -25,7 +25,6 @@ public class Schedule extends BaseEntity {
         this.content = content;
         this.writer = writer;
         this.password = password;
-
     }
 
     public void update(String title, String writer) {

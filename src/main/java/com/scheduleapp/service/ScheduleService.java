@@ -44,12 +44,17 @@ public class ScheduleService {
 
     // 전체조회
     @Transactional(readOnly = true)
-    public List<GetScheduleResponse> getAllSchedule() {
-        List<Schedule> schedules = scheduleRepository.findAll();
-
+    public List<GetScheduleResponse> getAllSchedule(String writer) {
+        if(writer == null || writer.isBlank()) {
+            List<Schedule> schedules = scheduleRepository.findAllByOrderByModifiedAtDesc();
+            return schedules.stream()
+                    .map(GetScheduleResponse::from).toList();
+        }
+        List<Schedule> schedules = scheduleRepository.findByWriterOrderByModifiedAtDesc(writer);
         return schedules.stream()
                 .map(GetScheduleResponse::from).toList();
     }
+
 
     // 수정
     @Transactional

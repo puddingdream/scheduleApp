@@ -27,10 +27,11 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<List<GetScheduleResponse>> getAllSchedules() {
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAllSchedule());
+    public ResponseEntity<List<GetScheduleResponse>> getAllSchedules(
+            @RequestParam(required = false) String writer
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAllSchedule(writer));
     }
-
 
     @PatchMapping("/schedules/{scheduleId}")
     public ResponseEntity<UpdateScheduleResponse> updateSchedule(
