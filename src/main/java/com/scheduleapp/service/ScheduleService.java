@@ -20,14 +20,13 @@ public class ScheduleService {
     //생성
     @Transactional
     public CreateScheduleResponse save(CreateScheduleRequest request) {
-        if (request.getPassword() == null || request.getPassword().isBlank()) {
-            throw new IllegalArgumentException("비밀번호는 필수입니다.");
-        }
+        validateCreateScheduleRequest(request);
         Schedule schedule = scheduleRepository.save(new Schedule(
                 request.getTitle(),
                 request.getContent(),
                 request.getWriter(),
                 request.getPassword()));
+
         return new CreateScheduleResponse(
                 schedule.getScheduleId(),
                 schedule.getTitle(),
@@ -70,6 +69,7 @@ public class ScheduleService {
     // 수정
     @Transactional
     public UpdateScheduleResponse updateSchedule(Long scheduleId, String password, UpdateScheduleRequest request) {
+        validateUpdateScheduleRequest(request);
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("없는 스케줄 입니다.")
         );
@@ -94,5 +94,50 @@ public class ScheduleService {
         }
         scheduleRepository.delete(schedule);
     }
+
+    private void validateCreateScheduleRequest(CreateScheduleRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("요청이 비어있습니다.");
+        }
+        if (request.getTitle() == null || request.getTitle().isBlank()) {
+            throw new IllegalArgumentException("제목은 필수입니다.");
+        }
+        if (request.getTitle().length() > 30) {
+            throw new IllegalArgumentException("제목은 30자를 넘길수 없습니다.");
+        }
+        if (request.getContent() == null || request.getContent().isBlank()) {
+            throw new IllegalArgumentException("내용은 필수입니다.");
+        }
+        if (request.getContent().length() > 200) {
+            throw new IllegalArgumentException("내용 200자를 넘길수 없습니다.");
+        }
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
+            throw new IllegalArgumentException("비밀번호는 필수입니다.");
+        }
+        if (request.getWriter() == null || request.getWriter().isBlank()) {
+            throw new IllegalArgumentException("작성자는 필수입니다.");
+        }
+    }
+
+    private void validateUpdateScheduleRequest(UpdateScheduleRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("요청이 비어있습니다.");
+        }
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
+            throw new IllegalArgumentException("비밀번호는 필수입니다.");
+        }
+        if (request.getTitle() != null) {
+            if (request.getTitle().isBlank()) {
+                throw new IllegalArgumentException("제목은 필수입니다.");
+            }
+            if (request.getTitle().length() > 30) {
+                throw new IllegalArgumentException("제목은 30자를 넘길수 없습니다.");
+            }
+        }
+        if (request.getWriter() != null && request.getWriter().isBlank()) {
+            throw new IllegalArgumentException("작성자는 필수입니다.");
+        }
+    }
+
 }
 

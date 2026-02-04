@@ -14,9 +14,13 @@ public class Schedule extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
+    @Column(length = 30, nullable = false)
     private String title;
+    @Column(length = 200, nullable = false)
     private String content;
+    @Column(nullable = false)
     private String writer;
+    @Column(nullable = false)
     private String password;
 
 
@@ -31,4 +35,5 @@ public class Schedule extends BaseEntity {
         this.title = title;
         this.writer = writer;
     }
+
 }
