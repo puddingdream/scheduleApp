@@ -24,7 +24,7 @@ public class ScheduleController {
 
     // 단건조회
     @GetMapping("/schedules/{scheduleId}")
-    public ResponseEntity<GetScheduleResponse> getOneschedule(@PathVariable Long scheduleId) {
+    public ResponseEntity<GetOneScheuleResponse> getOneschedule(@PathVariable Long scheduleId) {
         return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getOneSchedule(scheduleId));
     }
 
@@ -36,7 +36,7 @@ public class ScheduleController {
         return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAllSchedule(writer));
     }
 
-    //
+    //수정
     @PatchMapping("/schedules/{scheduleId}")
     public ResponseEntity<UpdateScheduleResponse> updateSchedule(
             @PathVariable Long scheduleId,
@@ -46,9 +46,10 @@ public class ScheduleController {
         );
     }
 
+    //삭제
     @DeleteMapping("/schedules/{scheduleId}")
-    public ResponseEntity<Void>  deleteSchedule(@PathVariable Long scheduleId) {
-        scheduleService.deleteSchedule(scheduleId);
+    public ResponseEntity<Void>  deleteSchedule(@PathVariable Long scheduleId, @RequestBody DeleteScheduleRequest request) {
+        scheduleService.deleteSchedule(scheduleId,request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

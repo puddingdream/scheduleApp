@@ -2,6 +2,7 @@ package com.scheduleapp.service;
 
 import com.scheduleapp.dto.*;
 import com.scheduleapp.entity.Schedule;
+import com.scheduleapp.repository.CommentRepository;
 import com.scheduleapp.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,14 @@ import java.util.List;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final CommentRepository commentRepository;
 
     //생성
     @Transactional
     public CreateScheduleResponse save(CreateScheduleRequest request) {
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
+            throw new IllegalArgumentException("비밀번호는 필수입니다.");
+        }
         Schedule schedule = scheduleRepository.save(new Schedule(
                 request.getTitle(),
                 request.getContent(),
@@ -35,10 +40,17 @@ public class ScheduleService {
 
     // 단건 조회
     @Transactional(readOnly = true)
-    public GetScheduleResponse getOneSchedule(Long scheduleId) {
+    public GetOneScheuleResponse getOneSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("없는 스케줄 입니다."));
-        return GetScheduleResponse.from(schedule);
+
+        List<GetCommentsResponse> comments =
+                commentRepository.findBySchedule_ScheduleId(scheduleId)
+                .stream()
+                .map(GetCommentsResponse::from)
+                .toList();
+
+        return GetOneScheuleResponse.from(schedule, comments);
     }
 
     // 전체조회
@@ -73,12 +85,14 @@ public class ScheduleService {
 
     // 삭제
     @Transactional
-    public void deleteSchedule(Long scheduleId) {
-        boolean existence = scheduleRepository.existsById(scheduleId);
-        if (!existence) {
-            throw new IllegalStateException("없는 스케줄 입니다.");
+    public void deleteSchedule(Long scheduleId,DeleteScheduleRequest request) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalStateException("없는 스케줄 입니다.")
+        );
+        if(!schedule.getPassword().equals(request.getPassword())) {
+            throw new IllegalArgumentException("틀린 비밀번호 입니다.");
         }
-        scheduleRepository.deleteById(scheduleId);
+        scheduleRepository.delete(schedule);
     }
 }
 
