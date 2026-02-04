@@ -37,15 +37,14 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public GetScheduleResponse getOneSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("없는 스케줄 입니다.")
-        );
+                () -> new IllegalStateException("없는 스케줄 입니다."));
         return GetScheduleResponse.from(schedule);
     }
 
     // 전체조회
     @Transactional(readOnly = true)
     public List<GetScheduleResponse> getAllSchedule(String writer) {
-        if(writer == null || writer.isBlank()) {
+        if (writer == null || writer.isBlank()) {
             List<Schedule> schedules = scheduleRepository.findAllByOrderByModifiedAtDesc();
             return schedules.stream()
                     .map(GetScheduleResponse::from).toList();
@@ -58,10 +57,13 @@ public class ScheduleService {
 
     // 수정
     @Transactional
-    public UpdateScheduleResponse updateSchedule(Long scheduleId, UpdateScheduleRequest request) {
+    public UpdateScheduleResponse updateSchedule(Long scheduleId, String password, UpdateScheduleRequest request) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("없는 스케줄 입니다.")
         );
+        if (!schedule.getPassword().equals(password)) {
+            throw new IllegalArgumentException("틀린 비밀번호 입니다.");
+        }
         String title = request.getTitle() != null ? request.getTitle() : schedule.getTitle();
         String writer = request.getWriter() != null ? request.getWriter() : schedule.getWriter();
 
