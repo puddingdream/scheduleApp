@@ -20,9 +20,9 @@ public class ScheduleService {
     //생성
     @Transactional
     public CreateScheduleResponse save(CreateScheduleRequest request) {
-        validateCreateScheduleRequest(request);
-        Schedule schedule = scheduleRepository.save( Schedule.from(request));
-        return  CreateScheduleResponse.from(schedule);
+        validateCreateScheduleRequest(request); // 생성 유저입력검증
+        Schedule schedule = scheduleRepository.save(Schedule.from(request));
+        return CreateScheduleResponse.from(schedule);
     }
 
     // 단건 조회
@@ -33,9 +33,9 @@ public class ScheduleService {
 
         List<GetCommentsResponse> comments =
                 commentRepository.findBySchedule_ScheduleId(scheduleId)
-                .stream()
-                .map(GetCommentsResponse::from)
-                .toList();
+                        .stream()
+                        .map(GetCommentsResponse::from)
+                        .toList();
 
         return GetOneScheuleResponse.from(schedule, comments);
     }
@@ -57,13 +57,14 @@ public class ScheduleService {
     // 수정
     @Transactional
     public UpdateScheduleResponse updateSchedule(Long scheduleId, String password, UpdateScheduleRequest request) {
-        validateUpdateScheduleRequest(request);
+        validateUpdateScheduleRequest(request); // 유저입력 검증
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("없는 스케줄 입니다.")
         );
         if (!schedule.getPassword().equals(password)) {
             throw new IllegalArgumentException("틀린 비밀번호 입니다.");
         }
+        //수정시 입력안한건 이전내용으로
         String title = request.getTitle() != null ? request.getTitle() : schedule.getTitle();
         String writer = request.getWriter() != null ? request.getWriter() : schedule.getWriter();
 
@@ -73,16 +74,17 @@ public class ScheduleService {
 
     // 삭제
     @Transactional
-    public void deleteSchedule(Long scheduleId,DeleteScheduleRequest request) {
+    public void deleteSchedule(Long scheduleId, DeleteScheduleRequest request) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("없는 스케줄 입니다.")
         );
-        if(!schedule.getPassword().equals(request.getPassword())) {
+        if (!schedule.getPassword().equals(request.getPassword())) {
             throw new IllegalArgumentException("틀린 비밀번호 입니다.");
         }
         scheduleRepository.delete(schedule);
     }
 
+    // 생성 유저입력검증
     private void validateCreateScheduleRequest(CreateScheduleRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("요청이 비어있습니다.");
@@ -107,6 +109,7 @@ public class ScheduleService {
         }
     }
 
+    // 수정 유저입력검증
     private void validateUpdateScheduleRequest(UpdateScheduleRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("요청이 비어있습니다.");
@@ -114,18 +117,11 @@ public class ScheduleService {
         if (request.getPassword() == null || request.getPassword().isBlank()) {
             throw new IllegalArgumentException("비밀번호는 필수입니다.");
         }
-        if (request.getTitle() != null) {
-            if (request.getTitle().isBlank()) {
-                throw new IllegalArgumentException("제목은 필수입니다.");
-            }
-            if (request.getTitle().length() > 30) {
-                throw new IllegalArgumentException("제목은 30자를 넘길수 없습니다.");
-            }
-        }
-        if (request.getWriter() != null && request.getWriter().isBlank()) {
-            throw new IllegalArgumentException("작성자는 필수입니다.");
+        if (request.getTitle().length() > 30) {
+            throw new IllegalArgumentException("제목은 30자를 넘길수 없습니다.");
         }
     }
+
 
 }
 

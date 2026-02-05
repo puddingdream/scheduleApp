@@ -22,8 +22,8 @@ public class Comment extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "scheduleId", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY) // 1개에 여러개 붙을예정
+    @JoinColumn(name = "scheduleId", nullable = false) // FK 연결해주기
     private Schedule schedule;
 
     public static Comment from(CreateCommentRequest comment,Schedule schedule ) {

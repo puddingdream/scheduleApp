@@ -20,7 +20,7 @@ public class CommentService {
 
     @Transactional
     public CreateCommentResponse save(Long scheduleId,CreateCommentRequest request) {
-        validateCreateCommentRequest(request);
+        validateCreateCommentRequest(request); // 유저입력검증
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("없는 스케줄 입니다."));
         if (commentRepository.countBySchedule_ScheduleId(scheduleId)>=10) {
@@ -30,6 +30,7 @@ public class CommentService {
           return  CreateCommentResponse.from(comment);
     }
 
+    // 생성 유저입력검증
     private void validateCreateCommentRequest(CreateCommentRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("요청이 비어있습니다.");

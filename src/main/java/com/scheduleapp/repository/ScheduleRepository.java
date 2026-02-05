@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    List<Schedule> findAllByOrderByModifiedAtDesc();
+    List<Schedule> findAllByOrderByModifiedAtDesc(); // 조회시 수정날자정렬
 
-    List<Schedule> findByWriterOrderByModifiedAtDesc(String writer);
+    List<Schedule> findByWriterOrderByModifiedAtDesc(String writer); // 작성자조회시 수정날자 정렬
 }
