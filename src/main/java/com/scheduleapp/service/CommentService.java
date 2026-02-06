@@ -3,7 +3,6 @@ package com.scheduleapp.service;
 import com.scheduleapp.dto.CreateCommentRequest;
 import com.scheduleapp.dto.CreateCommentResponse;
 import com.scheduleapp.entity.Comment;
-import com.scheduleapp.entity.Schedule;
 import com.scheduleapp.repository.CommentRepository;
 import com.scheduleapp.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +20,17 @@ public class CommentService {
     @Transactional
     public CreateCommentResponse save(Long scheduleId,CreateCommentRequest request) {
         validateCreateCommentRequest(request); // 유저입력검증
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("없는 스케줄 입니다."));
-        if (commentRepository.countBySchedule_ScheduleId(scheduleId)>=10) {
-            throw new IllegalArgumentException("댓글은 10개까지만 가능");
+
+        if (!scheduleRepository.existsById(scheduleId)) {
+            throw new IllegalStateException("없는 스케줄 입니다.");
         }
-          Comment comment = commentRepository.save( Comment.from(request,schedule));
-          return  CreateCommentResponse.from(comment);
+        if (commentRepository.countByScheduleId(scheduleId) >= 10) {
+            throw new IllegalArgumentException("댓글은 10개까지만 가능합니다.");
+        }
+        Comment comment = commentRepository.save(
+                Comment.from(request, scheduleId)
+        );
+        return CreateCommentResponse.from(comment);
     }
 
     // 생성 유저입력검증

@@ -22,23 +22,23 @@ public class Comment extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY) // 1개에 여러개 붙을예정
-    @JoinColumn(name = "scheduleId", nullable = false) // FK 연결해주기
-    private Schedule schedule;
+    @Column(nullable = false)
+    private Long scheduleId;
 
-    public static Comment from(CreateCommentRequest comment,Schedule schedule ) {
+
+    public static Comment from(CreateCommentRequest comment,Long scheduleId ) {
         return new Comment(
                 comment.getComment(),
                 comment.getWriter(),
                 comment.getPassword(),
-                schedule
+                scheduleId
         );
     }
-    public Comment(String comment, String writer, String password , Schedule schedule) {
+    public Comment(String comment, String writer, String password , Long scheduleId) {
         this.comment = comment;
         this.writer = writer;
         this.password = password;
-        this.schedule = schedule;
+        this.scheduleId = scheduleId;
     }
 
 

@@ -32,7 +32,7 @@ public class ScheduleService {
                 () -> new IllegalStateException("없는 스케줄 입니다."));
 
         List<GetCommentsResponse> comments =
-                commentRepository.findBySchedule_ScheduleId(scheduleId)
+                commentRepository.findByScheduleId(scheduleId)
                         .stream()
                         .map(GetCommentsResponse::from)
                         .toList();
@@ -64,7 +64,7 @@ public class ScheduleService {
         if (!schedule.getPassword().equals(password)) {
             throw new IllegalArgumentException("틀린 비밀번호 입니다.");
         }
-        //수정시 입력안한건 이전내용으로
+
         String title = request.getTitle() != null ? request.getTitle() : schedule.getTitle();
         String writer = request.getWriter() != null ? request.getWriter() : schedule.getWriter();
 
@@ -81,6 +81,7 @@ public class ScheduleService {
         if (!schedule.getPassword().equals(request.getPassword())) {
             throw new IllegalArgumentException("틀린 비밀번호 입니다.");
         }
+        commentRepository.deleteByScheduleId(scheduleId);
         scheduleRepository.delete(schedule);
     }
 
@@ -117,7 +118,7 @@ public class ScheduleService {
         if (request.getPassword() == null || request.getPassword().isBlank()) {
             throw new IllegalArgumentException("비밀번호는 필수입니다.");
         }
-        if (request.getTitle().length() > 30) {
+        if (request.getTitle() != null && request.getTitle().length() > 30) {
             throw new IllegalArgumentException("제목은 30자를 넘길수 없습니다.");
         }
     }
