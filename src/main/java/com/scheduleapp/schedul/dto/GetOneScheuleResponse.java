@@ -1,13 +1,14 @@
-package com.scheduleapp.dto;
+package com.scheduleapp.schedul.dto;
 
-import com.scheduleapp.entity.Schedule;
-import jakarta.persistence.Column;
+import com.scheduleapp.comment.dto.GetCommentsResponse;
+import com.scheduleapp.schedul.entity.Schedule;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
-public class GetScheduleResponse {
+public class GetOneScheuleResponse {
 
     private final Long scheduleid;
     private final String title;
@@ -15,27 +16,28 @@ public class GetScheduleResponse {
     private final String writer;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
+    private final List<GetCommentsResponse> comments;
 
-    public GetScheduleResponse(Long scheduleid, String title, String content, String writer, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public GetOneScheuleResponse(Long scheduleid, String title, String content, String writer, LocalDateTime createdAt, LocalDateTime modifiedAt, List<GetCommentsResponse> comments) {
         this.scheduleid = scheduleid;
         this.title = title;
         this.content = content;
         this.writer = writer;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
+        this.comments = comments;
     }
 
-    public static GetScheduleResponse from(Schedule schedule) {
-        return new GetScheduleResponse(
+    public static GetOneScheuleResponse from(Schedule schedule, List<GetCommentsResponse> comments) {
+        return new GetOneScheuleResponse(
                 schedule.getScheduleId(),
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getWriter(),
                 schedule.getCreatedAt(),
-                schedule.getModifiedAt()
+                schedule.getModifiedAt(),
+                comments
         );
     }
 
 }
-
-

@@ -1,6 +1,6 @@
-package com.scheduleapp.repository;
+package com.scheduleapp.comment.repository;
 
-import com.scheduleapp.entity.Comment;
+import com.scheduleapp.comment.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

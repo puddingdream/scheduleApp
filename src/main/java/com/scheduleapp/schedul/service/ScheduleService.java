@@ -1,9 +1,10 @@
-package com.scheduleapp.service;
+package com.scheduleapp.schedul.service;
 
-import com.scheduleapp.dto.*;
-import com.scheduleapp.entity.Schedule;
-import com.scheduleapp.repository.CommentRepository;
-import com.scheduleapp.repository.ScheduleRepository;
+import com.scheduleapp.comment.dto.GetCommentsResponse;
+import com.scheduleapp.comment.repository.CommentRepository;
+import com.scheduleapp.schedul.repository.ScheduleRepository;
+import com.scheduleapp.schedul.dto.*;
+import com.scheduleapp.schedul.entity.Schedule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

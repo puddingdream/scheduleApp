@@ -1,4 +1,4 @@
-package com.scheduleapp.entity;
+package com.scheduleapp.baseEntity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity {
+public abstract class AuditBaseEntity {
 
     @CreatedDate
     @Column(updatable = false)

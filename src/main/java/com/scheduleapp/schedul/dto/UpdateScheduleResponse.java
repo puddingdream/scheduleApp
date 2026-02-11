@@ -1,6 +1,6 @@
-package com.scheduleapp.dto;
+package com.scheduleapp.schedul.dto;
 
-import com.scheduleapp.entity.Schedule;
+import com.scheduleapp.schedul.entity.Schedule;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

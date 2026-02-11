@@ -1,6 +1,7 @@
-package com.scheduleapp.entity;
+package com.scheduleapp.schedul.entity;
 
-import com.scheduleapp.dto.CreateScheduleRequest;
+import com.scheduleapp.baseEntity.AuditBaseEntity;
+import com.scheduleapp.schedul.dto.CreateScheduleRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "schedule")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Schedule extends BaseEntity {
+public class Schedule extends AuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +26,7 @@ public class Schedule extends BaseEntity {
     private String password;
 
 
-    public Schedule(String title, String content, String writer, String password) {
+    private Schedule(String title, String content, String writer, String password) {
         this.title = title;
         this.content = content;
         this.writer = writer;

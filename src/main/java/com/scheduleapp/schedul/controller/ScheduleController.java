@@ -1,14 +1,15 @@
-package com.scheduleapp.controller;
+package com.scheduleapp.schedul.controller;
 
-import com.scheduleapp.dto.*;
-import com.scheduleapp.service.ScheduleService;
+import com.scheduleapp.schedul.service.ScheduleService;
+import com.scheduleapp.schedul.dto.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Tag(name = "스케줄", description = "일정 관리 API")
 @RestController
 @RequiredArgsConstructor
 public class ScheduleController {

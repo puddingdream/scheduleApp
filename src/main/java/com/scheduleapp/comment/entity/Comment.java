@@ -1,6 +1,7 @@
-package com.scheduleapp.entity;
+package com.scheduleapp.comment.entity;
 
-import com.scheduleapp.dto.CreateCommentRequest;
+import com.scheduleapp.comment.dto.CreateCommentRequest;
+import com.scheduleapp.baseEntity.AuditBaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "comment")
 @NoArgsConstructor (access = AccessLevel.PROTECTED)
-public class Comment extends BaseEntity {
+public class Comment extends AuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +27,7 @@ public class Comment extends BaseEntity {
     private Long scheduleId;
 
 
-    public static Comment from(CreateCommentRequest comment,Long scheduleId ) {
+    public static Comment from(CreateCommentRequest comment, Long scheduleId ) {
         return new Comment(
                 comment.getComment(),
                 comment.getWriter(),

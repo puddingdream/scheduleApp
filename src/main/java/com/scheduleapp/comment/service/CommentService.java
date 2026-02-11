@@ -1,10 +1,10 @@
-package com.scheduleapp.service;
+package com.scheduleapp.comment.service;
 
-import com.scheduleapp.dto.CreateCommentRequest;
-import com.scheduleapp.dto.CreateCommentResponse;
-import com.scheduleapp.entity.Comment;
-import com.scheduleapp.repository.CommentRepository;
-import com.scheduleapp.repository.ScheduleRepository;
+import com.scheduleapp.comment.dto.CreateCommentRequest;
+import com.scheduleapp.comment.dto.CreateCommentResponse;
+import com.scheduleapp.comment.entity.Comment;
+import com.scheduleapp.comment.repository.CommentRepository;
+import com.scheduleapp.schedul.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ public class CommentService {
     private final ScheduleRepository scheduleRepository;
 
     @Transactional
-    public CreateCommentResponse save(Long scheduleId,CreateCommentRequest request) {
+    public CreateCommentResponse save(Long scheduleId, CreateCommentRequest request) {
         validateCreateCommentRequest(request); // 유저입력검증
 
         if (!scheduleRepository.existsById(scheduleId)) {
