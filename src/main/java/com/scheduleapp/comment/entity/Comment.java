@@ -18,7 +18,7 @@ public class Comment extends SoftDeleteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
-    @Column(length = 100 ,nullable = false)
+    @Column(length = 200 ,nullable = false)
     private String comment;
 
     private String guestName;

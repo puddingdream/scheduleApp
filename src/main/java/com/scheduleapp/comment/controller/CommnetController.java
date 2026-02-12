@@ -2,15 +2,17 @@ package com.scheduleapp.comment.controller;
 
 import com.scheduleapp.comment.dto.CreateCommentRequest;
 import com.scheduleapp.comment.dto.CreateCommentResponse;
+import com.scheduleapp.comment.dto.GetUserAllCommentResponse;
 import com.scheduleapp.comment.service.CommentService;
 import com.scheduleapp.user.dto.SessionUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "댓글", description = "스케줄에 대한 댓글")
 @RestController
@@ -28,4 +30,14 @@ public class CommnetController {
             @RequestBody CreateCommentRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.save(sessionUser,scheduleId,request));
     }
+
+    //댓글 전체 조회
+    @GetMapping("/comments/me")
+    public ResponseEntity<List<GetUserAllCommentResponse>>  getAllComments(
+            @SessionAttribute(name = "loginUser") SessionUser sessionUser
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.getAllComment(sessionUser));
+    }
+
+
 }
