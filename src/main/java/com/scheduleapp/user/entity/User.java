@@ -18,8 +18,11 @@ public class User extends SoftDeleteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+    @Column(length = 20,nullable = false)
     private String name;
+    @Column(nullable = false)
     private String email;
+    @Column(length = 30 ,nullable = false)
     private String password;
 
     public User(String name, String email, String password) {
@@ -33,10 +36,10 @@ public class User extends SoftDeleteEntity {
         this.email = email;
     }
 
-    public static User from(CreateUserRequest request) {
-        return new User(request.email(),
-                request.name(),
-                request.password());
+    public static User from(CreateUserRequest request,String encodedPassword) {
+        return new User(request.name(),
+                request.email(),
+                encodedPassword);
     }
 
 }

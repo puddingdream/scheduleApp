@@ -1,5 +1,6 @@
 package com.scheduleapp.user.service;
 
+import com.scheduleapp.config.EncoderConfig;
 import com.scheduleapp.exception.PasswordMissException;
 import com.scheduleapp.exception.UserNullException;
 import com.scheduleapp.user.dto.*;
@@ -17,11 +18,14 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final EncoderConfig encoderConfig;
 
     //회원가입(생성)
     @Transactional
     public CreateUserResponse crateAccount(@Valid CreateUserRequest request) {
-        return CreateUserResponse.from(userRepository.save(User.from(request)));
+        String encodedPassword = encoderConfig.encode(request.password()); // 비밀번호 암호화해주기 encode
+        User user = User.from(request, encodedPassword); // 암호화된 비밀번호 넣어서 유저만들고
+        return CreateUserResponse.from(userRepository.save(user)); // 저장
 
     }
 
@@ -48,7 +52,7 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNullException("존재하지 않는 유저입니다.")
         );
-        if(!user.getPassword().equals(request.password())){
+        if (!encoderConfig.matches(request.password(), user.getPassword())) { // 비밀번호 조회할때는 matches
             throw new PasswordMissException("비밀번호를 틀렸습니다.");
         }
         String name = request.name() != null ? request.name() : user.getName();
@@ -60,22 +64,25 @@ public class UserService {
 
     //삭제
     @Transactional
-    public void deleteUser(Long userId) {
+    public void deleteUser(Long userId, String password) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNullException("존재하지 않는 유저입니다.")
         );
+        if (!encoderConfig.matches(password, user.getPassword())) {
+            throw new PasswordMissException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
         user.delete();
 
 
     }
 
     // 로그인전용 검증만
-    @Transactional(readOnly = true)
+    @Transactional
     public User login(@Valid LoginRequest request) {
         User user = userRepository.findByEmail(request.email()).orElseThrow(
                 () -> new PasswordMissException("이메일 또는 비밀번호가 일치하지 않습니다.")
         );
-        if (!request.password().equals(user.getPassword())) {
+        if (!encoderConfig.matches(request.password(), user.getPassword())) {
             throw new PasswordMissException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
         return user;

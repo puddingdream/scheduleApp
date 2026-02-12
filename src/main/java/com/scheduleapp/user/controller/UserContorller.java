@@ -52,9 +52,10 @@ public class UserContorller {
     //삭제
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> delete(
-            @PathVariable Long userId
+            @PathVariable Long userId,
+            @RequestBody String password
     ){
-        userService.deleteUser(userId);
+        userService.deleteUser(userId, password);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -64,28 +65,22 @@ public class UserContorller {
             @Valid @RequestBody LoginRequest request,
             HttpSession session) {
         User user = userService.login(request);
-        SessionUser sessionUser = new SessionUser(
-                user.getUserId(),
-                user.getName(),
-                user.getEmail());
-        session.setAttribute("loginUser", sessionUser);
+        SessionUser sessionUser =  SessionUser.from(user); // 세션에 넣을 정보
 
-        LoginResponse response = new LoginResponse(
-                user.getUserId(),
-                user.getName(),
-                user.getEmail());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        session.setAttribute("loginUser", sessionUser); // 세션만드는 메소드
+
+        return ResponseEntity.status(HttpStatus.OK).body(LoginResponse.from(user)); //유저한테 간단한정보주기
     }
 
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
-            HttpSession session) {
-        if (sessionUser == null) {
+            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, // 세션의 값 가져오기
+            HttpSession session) { // 세션그자체
+        if (sessionUser == null) { // 가져온 세션값을보고 로그인중이아니면 로그아웃하지않고 오류던지기
             throw new NoSessionLogOutException("SessionUser is null");
         }
-        session.invalidate();
+        session.invalidate();  // 세션삭제
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
