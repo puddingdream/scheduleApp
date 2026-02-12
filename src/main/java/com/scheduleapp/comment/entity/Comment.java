@@ -8,11 +8,13 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @Table(name = "comment")
 @NoArgsConstructor (access = AccessLevel.PROTECTED)
+@SQLRestriction("deleted = false")
 public class Comment extends SoftDeleteEntity {
 
     @Id
@@ -22,6 +24,7 @@ public class Comment extends SoftDeleteEntity {
     private String comment;
 
     private String guestName;
+    @Column(length = 100)
     private String guestPasswordHash;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -69,4 +72,8 @@ public class Comment extends SoftDeleteEntity {
         this.guestPasswordHash = guestPasswordHash;
         this.schedule = schedule;
     }
+
+    public void update(String comment) {
+        this.comment = comment;
+        }
 }

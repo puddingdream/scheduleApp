@@ -22,7 +22,7 @@ public class User extends SoftDeleteEntity {
     private String name;
     @Column(nullable = false)
     private String email;
-    @Column(length = 30 ,nullable = false)
+    @Column(length = 100, nullable = false)
     private String password;
 
     public User(String name, String email, String password) {

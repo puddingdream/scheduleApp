@@ -35,7 +35,7 @@ public class ScheduleService {
                 () -> new NullScheduleException("없는 스케줄 입니다."));
 
         List<GetCommentsResponse> comments =
-                commentRepository.findByScheduleId(scheduleId)
+                commentRepository.findBySchedule_ScheduleId(scheduleId)
                         .stream()
                         .map(GetCommentsResponse::from)
                         .toList();
@@ -84,7 +84,7 @@ public class ScheduleService {
         if (!schedule.getPassword().equals(request.getPassword())) {
             throw new PasswordMissException("틀린 비밀번호 입니다.");
         }
-        commentRepository.deleteByScheduleId(scheduleId);
+        commentRepository.deleteBySchedule_ScheduleId(scheduleId);
         scheduleRepository.delete(schedule);
     }
 

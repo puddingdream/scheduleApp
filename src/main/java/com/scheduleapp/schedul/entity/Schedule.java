@@ -1,17 +1,19 @@
 package com.scheduleapp.schedul.entity;
 
-import com.scheduleapp.baseEntity.AuditBaseEntity;
+import com.scheduleapp.baseEntity.SoftDeleteEntity;
 import com.scheduleapp.schedul.dto.CreateScheduleRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @Table(name = "schedule")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Schedule extends AuditBaseEntity {
+@SQLRestriction("deleted = false")
+public class Schedule extends SoftDeleteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

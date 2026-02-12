@@ -33,11 +33,16 @@ public class GlobalExceptionHandler {  // 국룰닉네임
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
+    // 권한 없음
+    @ExceptionHandler(UnauthorizedCommentException.class)
+    public ResponseEntity<String> handleUnauthorized(UnauthorizedCommentException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    }
+
     //@Valid 오류
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidException (MethodArgumentNotValidException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
-
 
 }
