@@ -1,12 +1,8 @@
 package com.scheduleapp.comment.dto;
 
-import lombok.Getter;
 
-@Getter
-public class CreateCommentRequest {
-
-    private String comment;
-    private String writer;
-    private String password;
-
+public record CreateCommentRequest(
+        String comment,
+        String guestName,
+        String password ) {
 }

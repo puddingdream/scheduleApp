@@ -13,4 +13,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     int countByScheduleId(Long scheduleId);
 
     void deleteByScheduleId(Long scheduleId);
+
+    int countBySchedule_ScheduleId(Long scheduleId);
+
 }

@@ -64,11 +64,11 @@ public class UserService {
 
     //삭제
     @Transactional
-    public void deleteUser(Long userId, String password) {
+    public void deleteUser(Long userId, DeleteUserRequest request) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNullException("존재하지 않는 유저입니다.")
         );
-        if (!encoderConfig.matches(password, user.getPassword())) {
+        if (!encoderConfig.matches(request.password(), user.getPassword())) {
             throw new PasswordMissException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
         user.delete();

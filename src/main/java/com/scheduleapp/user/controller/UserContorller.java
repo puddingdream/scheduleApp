@@ -53,9 +53,9 @@ public class UserContorller {
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> delete(
             @PathVariable Long userId,
-            @RequestBody String password
+            @Valid @RequestBody DeleteUserRequest request
     ){
-        userService.deleteUser(userId, password);
+        userService.deleteUser(userId, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
