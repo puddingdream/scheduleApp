@@ -4,6 +4,7 @@ import com.scheduleapp.comment.dto.CreateCommentRequest;
 import com.scheduleapp.comment.dto.CreateCommentResponse;
 import com.scheduleapp.comment.entity.Comment;
 import com.scheduleapp.comment.repository.CommentRepository;
+import com.scheduleapp.exception.NullScheduleException;
 import com.scheduleapp.schedul.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class CommentService {
         validateCreateCommentRequest(request); // 유저입력검증
 
         if (!scheduleRepository.existsById(scheduleId)) {
-            throw new IllegalStateException("없는 스케줄 입니다.");
+            throw new NullScheduleException("없는 스케줄 입니다.");
         }
         if (commentRepository.countByScheduleId(scheduleId) >= 10) {
             throw new IllegalArgumentException("댓글은 10개까지만 가능합니다.");

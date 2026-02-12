@@ -2,6 +2,8 @@ package com.scheduleapp.schedul.service;
 
 import com.scheduleapp.comment.dto.GetCommentsResponse;
 import com.scheduleapp.comment.repository.CommentRepository;
+import com.scheduleapp.exception.NullScheduleException;
+import com.scheduleapp.exception.PasswordMissException;
 import com.scheduleapp.schedul.repository.ScheduleRepository;
 import com.scheduleapp.schedul.dto.*;
 import com.scheduleapp.schedul.entity.Schedule;
@@ -30,7 +32,7 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public GetOneScheuleResponse getOneSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("없는 스케줄 입니다."));
+                () -> new NullScheduleException("없는 스케줄 입니다."));
 
         List<GetCommentsResponse> comments =
                 commentRepository.findByScheduleId(scheduleId)
@@ -60,10 +62,10 @@ public class ScheduleService {
     public UpdateScheduleResponse updateSchedule(Long scheduleId, String password, UpdateScheduleRequest request) {
         validateUpdateScheduleRequest(request); // 유저입력 검증
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("없는 스케줄 입니다.")
+                () -> new NullScheduleException("없는 스케줄 입니다.")
         );
         if (!schedule.getPassword().equals(password)) {
-            throw new IllegalArgumentException("틀린 비밀번호 입니다.");
+            throw new PasswordMissException("틀린 비밀번호 입니다.");
         }
 
         String title = request.getTitle() != null ? request.getTitle() : schedule.getTitle();
@@ -77,10 +79,10 @@ public class ScheduleService {
     @Transactional
     public void deleteSchedule(Long scheduleId, DeleteScheduleRequest request) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("없는 스케줄 입니다.")
+                () -> new NullScheduleException("없는 스케줄 입니다.")
         );
         if (!schedule.getPassword().equals(request.getPassword())) {
-            throw new IllegalArgumentException("틀린 비밀번호 입니다.");
+            throw new PasswordMissException("틀린 비밀번호 입니다.");
         }
         commentRepository.deleteByScheduleId(scheduleId);
         scheduleRepository.delete(schedule);
