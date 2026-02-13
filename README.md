@@ -71,14 +71,62 @@ Spring Boot 기반 일정 관리 애플리케이션입니다.
 - 로그인 시 PasswordEncoder.matches() 사용
 
 ---
+# 📌 API 명세서 (최신화 버전)
 
-# 📌 API 명세서
+---
+
+# 📊 데이터 정의
+
+---
+
+## 👤 유저 (User)
+
+| 데이터명 | 키 | 예시값 |
+|-----------|------|-----------|
+| 유저 ID | userId | 1 |
+| 유저명 | name | "철수" |
+| 이메일 | email | "test@test.com" |
+| 비밀번호 | password | (BCrypt 암호화 저장) |
+| 회원가입일 | createdAt | 2026-02-05T19:13:35 |
+| 회원수정일 | modifiedAt | 2026-02-05T19:13:35 |
+
+---
+
+## 📅 일정 (Schedule)
+
+| 데이터명 | 키 | 예시값 |
+|-----------|------------|------------|
+| 스케줄 번호 | scheduleId | 1 |
+| 제목 | title | "과제하기" |
+| 내용 | content | "JPA 공부하기" |
+| 작성 유저 ID | userId | 1 |
+| 작성 시간 | createdAt | 2026-02-05T19:13:35 |
+| 수정 시간 | modifiedAt | 2026-02-05T19:13:35 |
+
+---
+
+## 💬 댓글 (Comment)
+
+| 데이터명 | 키 | 예시값 |
+|-----------|------------|------------|
+| 댓글 번호 | commentId | 1 |
+| 댓글 내용 | comment | "좋아요" |
+| 일정 ID | scheduleId | 1 |
+| 작성 유저 ID | userId | 2 |
+| 작성 시간 | createdAt | 2026-02-05T19:15:35 |
+| 수정 시간 | modifiedAt | 2026-02-05T19:15:35 |
 
 ---
 
 # 👤 회원가입
 
-### POST /users
+## 🟢 유저 생성
+
+### Request
+
+- Method: POST
+- URL: `/users`
+- Content-Type: application/json
 
 ```json
 {
@@ -88,7 +136,11 @@ Spring Boot 기반 일정 관리 애플리케이션입니다.
 }
 ```
 
-### Response (201)
+### Response
+
+Status Code:
+- 201 CREATED
+- 400 BAD REQUEST
 
 ```json
 {
@@ -104,7 +156,13 @@ Spring Boot 기반 일정 관리 애플리케이션입니다.
 
 # 🔐 로그인
 
-### POST /login
+## 🟢 로그인
+
+### Request
+
+- Method: POST
+- URL: `/login`
+- Content-Type: application/json
 
 ```json
 {
@@ -115,30 +173,46 @@ Spring Boot 기반 일정 관리 애플리케이션입니다.
 
 ### Response
 
+Status Code:
 - 200 OK
-- Session 발급
+- 401 UNAUTHORIZED
+
+✔ 로그인 성공 시 Session 생성
 
 ---
 
-# 📅 일정 생성
+# 📅 일정 CRUD
 
-### POST /schedules
+---
+
+## 🟢 일정 생성
+
+### Request
+
+- Method: POST
+- URL: `/schedules`
+- Session: 필요
+- Content-Type: application/json
 
 ```json
 {
   "title": "과제하기",
-  "content": "JPA 연관관계 공부",
-  "userId": 1
+  "content": "JPA 공부"
 }
 ```
 
-### Response (201)
+### Response
+
+Status Code:
+- 201 CREATED
+- 400 BAD REQUEST
+- 401 UNAUTHORIZED
 
 ```json
 {
   "scheduleId": 1,
   "title": "과제하기",
-  "content": "JPA 연관관계 공부",
+  "content": "JPA 공부",
   "userName": "철수",
   "createdAt": "2026-02-05T19:13:35",
   "modifiedAt": "2026-02-05T19:13:35"
@@ -147,15 +221,24 @@ Spring Boot 기반 일정 관리 애플리케이션입니다.
 
 ---
 
-# 📅 일정 단건 조회
+## 🟢 일정 단건 조회
 
-### GET /schedules/{scheduleId}
+### Request
+
+- Method: GET
+- URL: `/schedules/{scheduleId}`
+
+### Response
+
+Status Code:
+- 200 OK
+- 404 NOT FOUND
 
 ```json
 {
   "scheduleId": 1,
   "title": "과제하기",
-  "content": "JPA 연관관계 공부",
+  "content": "JPA 공부",
   "userName": "철수",
   "createdAt": "2026-02-05T19:13:35",
   "modifiedAt": "2026-02-05T19:13:35",
@@ -164,8 +247,8 @@ Spring Boot 기반 일정 관리 애플리케이션입니다.
       "commentId": 1,
       "comment": "좋아요",
       "userName": "영희",
-      "createdAt": "2026-02-05T19:14:35",
-      "modifiedAt": "2026-02-05T19:14:35"
+      "createdAt": "2026-02-05T19:15:35",
+      "modifiedAt": "2026-02-05T19:15:35"
     }
   ]
 }
@@ -173,14 +256,28 @@ Spring Boot 기반 일정 관리 애플리케이션입니다.
 
 ---
 
-# 📅 일정 전체 조회 (페이징)
+## 🟢 일정 전체 조회 (페이징)
 
-### GET /schedules?page=0&size=10
+### Request
 
-- 기본 size = 10
-- 수정일 기준 내림차순 정렬
+- Method: GET
+- URL: `/schedules`
+- Query Parameter:
+
+| 키 | 설명 |
+|----|------|
+| page | 페이지 번호 (기본 0) |
+| size | 페이지 크기 (기본 10) |
+
+예시:
+```
+/schedules?page=0&size=10
+```
 
 ### Response
+
+Status Code:
+- 200 OK
 
 ```json
 {
@@ -202,31 +299,61 @@ Spring Boot 기반 일정 관리 애플리케이션입니다.
 }
 ```
 
+✔ 수정일 기준 내림차순 정렬
+
 ---
 
-# 📅 일정 수정
+## 🟢 일정 수정
 
-### PATCH /schedules/{scheduleId}
+### Request
+
+- Method: PATCH
+- URL: `/schedules/{scheduleId}`
+- Session: 필요
 
 ```json
 {
-  "title": "과제 끝내기"
+  "title": "과제 끝내기",
+  "content": "완료"
 }
 ```
 
+### Response
+
+- 200 OK
+- 400 BAD REQUEST
+- 401 UNAUTHORIZED
+- 404 NOT FOUND
+
 ---
 
-# 📅 일정 삭제
+## 🟢 일정 삭제
 
-### DELETE /schedules/{scheduleId}
+### Request
 
-- 세션 인증 필요
+- Method: DELETE
+- URL: `/schedules/{scheduleId}`
+- Session: 필요
+
+### Response
+
+- 204 NO CONTENT
+- 401 UNAUTHORIZED
+- 404 NOT FOUND
 
 ---
 
-# 💬 댓글 생성
+# 💬 댓글 CRUD
 
-### POST /schedules/{scheduleId}/comments
+---
+
+## 🟢 댓글 생성
+
+### Request
+
+- Method: POST
+- URL: `/schedules/{scheduleId}/comments`
+- Session: 필요
 
 ```json
 {
@@ -234,25 +361,56 @@ Spring Boot 기반 일정 관리 애플리케이션입니다.
 }
 ```
 
----
+### Response
 
-# 💬 댓글 전체 조회
-
-### GET /schedules/{scheduleId}/comments
-
----
-
-# 💬 댓글 수정
-
-### PATCH /schedules/{scheduleId}/comments/{commentId}
+- 201 CREATED
+- 400 BAD REQUEST
+- 401 UNAUTHORIZED
 
 ---
 
-# 💬 댓글 삭제
+## 🟢 댓글 전체 조회
 
-### DELETE /schedules/{scheduleId}/comments/{commentId}
+### Request
+
+- Method: GET
+- URL: `/schedules/{scheduleId}/comments`
+
+### Response
+
+- 200 OK
+- 404 NOT FOUND
 
 ---
+
+## 🟢 댓글 수정
+
+### Request
+
+- Method: PATCH
+- URL: `/schedules/{scheduleId}/comments/{commentId}`
+- Session: 필요
+
+```json
+{
+  "comment": "수정된 댓글"
+}
+```
+
+---
+
+## 🟢 댓글 삭제
+
+### Request
+
+- Method: DELETE
+- URL: `/schedules/{scheduleId}/comments/{commentId}`
+- Session: 필요
+
+- 204 NO CONTENT
+- 401 UNAUTHORIZED
+- 404 NOT FOUND
+
 
 # 📌 예외 처리
 
