@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 
 import java.util.List;
@@ -95,7 +97,12 @@ public class ScheduleService {
     //페이지 조회
     @Transactional(readOnly = true)
     public Page<GetPageScheduleResponse> getPageSchedule(Pageable pageable) {
-        Page<Schedule> page = scheduleRepository.findAllByOrderByModifiedAtDesc(pageable);
+        Pageable fixed = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("modifiedAt").descending()
+        );
+        Page<Schedule> page = scheduleRepository.findAllByOrderByModifiedAtDesc(fixed);
         return page.map(schedule -> GetPageScheduleResponse.of(
                 schedule,
                 commentRepository.countBySchedule_ScheduleId(schedule.getScheduleId())
