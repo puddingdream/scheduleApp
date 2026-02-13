@@ -10,6 +10,9 @@ import com.scheduleapp.schedul.entity.Schedule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.List;
 
@@ -87,6 +90,18 @@ public class ScheduleService {
         commentRepository.deleteBySchedule_ScheduleId(scheduleId);
         scheduleRepository.delete(schedule);
     }
+
+
+    //페이지 조회
+    @Transactional(readOnly = true)
+    public Page<GetPageScheduleResponse> getPageSchedule(Pageable pageable) {
+        Page<Schedule> page = scheduleRepository.findAllByOrderByModifiedAtDesc(pageable);
+        return page.map(schedule -> GetPageScheduleResponse.of(
+                schedule,
+                commentRepository.countBySchedule_ScheduleId(schedule.getScheduleId())
+        ));
+    }
+
 
     // 생성 유저입력검증
     private void validateCreateScheduleRequest(CreateScheduleRequest request) {

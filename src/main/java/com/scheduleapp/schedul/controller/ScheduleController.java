@@ -1,9 +1,13 @@
 package com.scheduleapp.schedul.controller;
 
-import com.scheduleapp.schedul.service.ScheduleService;
 import com.scheduleapp.schedul.dto.*;
+import com.scheduleapp.schedul.service.ScheduleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,4 +57,17 @@ public class ScheduleController {
         scheduleService.deleteSchedule(scheduleId,request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    // 페이지
+    @GetMapping("/schedules/page")
+    public ResponseEntity<Page<GetPageScheduleResponse>> getPage(
+            @PageableDefault(
+                    size = 10,
+                    sort = "modifiedAt",
+                    direction = Sort.Direction.DESC
+            ) Pageable pageable){
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getPageSchedule(pageable));
+    }
+
+
 }
