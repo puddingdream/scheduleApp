@@ -1,205 +1,171 @@
+# 📅 Schedule Application (Advanced Version)
 
-# 📅 Schedule Application
+## 📌 프로젝트 개요
 
-## 📌 ERD (Entity Relationship Diagram)
+Spring Boot 기반 일정 관리 애플리케이션입니다.
 
-```mermaid
-erDiagram
-    SCHEDULE {
-        Long schedule_id PK
-        String title
-        String content
-        String writer
-        String password
-        LocalDateTime created_at
-        LocalDateTime modified_at
-    }
+기존 CRUD 기반 일정 앱에서 확장되어 아래 기능이 추가되었습니다:
 
-    COMMENT {
-        Long comment_id PK
-        String comment
-        String writer
-        String password
-        LocalDateTime created_at
-        LocalDateTime modified_at
-        Long schedule_id FK
-    }
-
-    SCHEDULE ||--o{ COMMENT : "has"
-    %% 비즈니스 제약사항: 하나의 일정에는 최대 10개의 댓글만 존재할 수 있음
-````
+- ✅ 유저 CRUD
+- ✅ 일정 - 유저 연관관계 (ManyToOne)
+- ✅ 회원가입 / 로그인 (Session 기반 인증)
+- ✅ 비밀번호 암호화 (BCrypt)
+- ✅ 댓글 CRUD
+- ✅ 일정 페이징 조회 (Pageable)
+- ✅ Validation + Global Exception 처리
+- ✅ JPA Auditing 적용
 
 ---
 
-## 📌 API 명세서
+# 📌 ERD 
 
-### 🔹 데이터 정의
+<img width="1901" height="5263" alt="image" src="https://github.com/user-attachments/assets/8faa290e-0251-4bf9-9260-5e15eb2d1875" />
 
-#### 📅 일정(Schedule)
 
-| 데이터 명  | 키          | 예시 값        |
-| ------ | ---------- | ----------- |
-| 스케줄 번호 | scheduleId | 1           |
-| 제목     | title      | "과제하기"      |
-| 내용     | content    | "스케줄 앱 만들기" |
-| 작성자    | writer     | "배철수"       |
-| 패스워드   | password   | "12345678"  |
-| 작성 시간  | createdAt  | 시간          |
-| 수정 시간  | modifiedAt | 시간          |
+# 📌 데이터 정의
 
-#### 💬 댓글(Comment)
+## 👤 User
 
-| 데이터 명 | 키          | 예시 값       |
-| ----- | ---------- | ---------- |
-| 댓글 번호 | commentId  | 1          |
-| 댓글 내용 | comment    | "히히"       |
-| 작성자   | writer     | "김철수"      |
-| 패스워드  | password   | "12345678" |
-| 작성 시간 | createdAt  | 시간         |
-| 수정 시간 | modifiedAt | 시간         |
+| 데이터명 | 키 | 설명 |
+|----------|----|------|
+| 유저 ID | userId | PK |
+| 유저명 | name | 최대 4글자 |
+| 이메일 | email | 로그인 ID |
+| 비밀번호 | password | BCrypt 암호화 저장 |
+| 생성일 | createdAt | JPA Auditing |
+| 수정일 | modifiedAt | JPA Auditing |
 
 ---
 
-## 🟢 일정 생성
+## 📅 Schedule
 
-### Request
+| 데이터명 | 키 | 설명 |
+|----------|----|------|
+| 일정 ID | scheduleId | PK |
+| 제목 | title | 최대 10글자 |
+| 내용 | content | |
+| 유저 ID | userId | FK |
+| 생성일 | createdAt | JPA Auditing |
+| 수정일 | modifiedAt | JPA Auditing |
 
-* **Method:** POST
-* **URL:** `/schedules`
-* **Content-Type:** application/json
+---
+
+## 💬 Comment
+
+| 데이터명 | 키 | 설명 |
+|----------|----|------|
+| 댓글 ID | commentId | PK |
+| 댓글 내용 | comment | |
+| 일정 ID | scheduleId | FK |
+| 유저 ID | userId | FK |
+| 생성일 | createdAt | JPA Auditing |
+| 수정일 | modifiedAt | JPA Auditing |
+
+---
+
+# 📌 인증 방식
+
+- 로그인 시 Session 생성
+- 이후 수정/삭제 API는 세션 기반 인증
+- 비밀번호는 BCrypt 암호화 저장
+- 로그인 시 PasswordEncoder.matches() 사용
+
+---
+
+# 📌 API 명세서
+
+---
+
+# 👤 회원가입
+
+### POST /users
 
 ```json
 {
-  "title": "과제하기",
-  "content": "일정 관리 앱 구현하기",
-  "writer": "배철수",
+  "name": "철수",
+  "email": "test@test.com",
+  "password": "12345678"
+}
+```
+
+### Response (201)
+
+```json
+{
+  "userId": 1,
+  "name": "철수",
+  "email": "test@test.com",
+  "createdAt": "2026-02-05T19:13:35",
+  "modifiedAt": "2026-02-05T19:13:35"
+}
+```
+
+---
+
+# 🔐 로그인
+
+### POST /login
+
+```json
+{
+  "email": "test@test.com",
   "password": "12345678"
 }
 ```
 
 ### Response
 
-* **Status Code:**
+- 200 OK
+- Session 발급
 
-  * 201 CREATED
-  * 400 BAD REQUEST
+---
+
+# 📅 일정 생성
+
+### POST /schedules
+
+```json
+{
+  "title": "과제하기",
+  "content": "JPA 연관관계 공부",
+  "userId": 1
+}
+```
+
+### Response (201)
 
 ```json
 {
   "scheduleId": 1,
   "title": "과제하기",
-  "content": "일정 관리 앱 구현하기",
-  "writer": "배철수",
-  "createdAt": "2026-02-04T19:13:35.036846",
-  "modifiedAt": "2026-02-04T19:13:35.036846"
+  "content": "JPA 연관관계 공부",
+  "userName": "철수",
+  "createdAt": "2026-02-05T19:13:35",
+  "modifiedAt": "2026-02-05T19:13:35"
 }
 ```
 
 ---
 
-## 🟢 댓글 생성
+# 📅 일정 단건 조회
 
-### Request
-
-* **Method:** POST
-* **URL:** `/schedules/{scheduleId}/comments`
-* **Content-Type:** application/json
-
-```json
-{
-  "comment": "히히",
-  "writer": "김철수",
-  "password": "12345678"
-}
-```
-
-### Response
-
-* **Status Code:**
-
-  * 201 CREATED
-  * 400 BAD REQUEST
-
-```json
-{
-  "commentId": 1,
-  "comment": "히히",
-  "writer": "김철수",
-  "createdAt": "2026-02-04T19:15:30.397854",
-  "modifiedAt": "2026-02-04T19:15:30.397854"
-}
-```
-
----
-
-## 🟢 일정 전체 조회
-
-### Request
-
-* **Method:** GET
-* **URL:** `/schedules`
-* **Query Parameter (선택):**
-
-| 키      | 값   |
-| ------ | --- |
-| writer | 배철수 |
-
-### Response
-
-* **Status Code:** 200 OK
-
-```json
-[
-  {
-    "scheduleId": 1,
-    "title": "스프링 과제 제출",
-    "content": "일정 관리 앱 구현하기",
-    "writer": "배철수",
-    "createdAt": "2026-02-04T19:15:30.397854",
-    "modifiedAt": "2026-02-04T19:15:30.397854"
-  },
-  {
-    "scheduleId": 2,
-    "title": "자바과제",
-    "content": "커머스과제하기",
-    "writer": "배철수",
-    "createdAt": "2026-02-02T19:15:30.397854",
-    "modifiedAt": "2026-02-02T19:15:30.397854"
-  }
-]
-```
-
-* 작성자가 있으면 해당 작성자의 일정만 조회
-* 작성자가 없으면 전체 일정 조회
-
----
-
-## 🟢 일정 단건 조회 (댓글 포함)
-
-### Request
-
-* **Method:** GET
-* **URL:** `/schedules/{scheduleId}`
-
-### Response
-
-* **Status Code:** 200 OK
+### GET /schedules/{scheduleId}
 
 ```json
 {
   "scheduleId": 1,
   "title": "과제하기",
-  "content": "일정 관리 앱 구현하기",
-  "writer": "배철수",
-  "createdAt": "2026-02-04T19:13:35.036846",
-  "modifiedAt": "2026-02-04T19:13:35.036846",
+  "content": "JPA 연관관계 공부",
+  "userName": "철수",
+  "createdAt": "2026-02-05T19:13:35",
+  "modifiedAt": "2026-02-05T19:13:35",
   "comments": [
     {
       "commentId": 1,
-      "comment": "히히",
-      "writer": "김철수",
-      "createdAt": "2026-02-04T19:15:30.397854",
-      "modifiedAt": "2026-02-04T19:15:30.397854"
+      "comment": "좋아요",
+      "userName": "영희",
+      "createdAt": "2026-02-05T19:14:35",
+      "modifiedAt": "2026-02-05T19:14:35"
     }
   ]
 }
@@ -207,96 +173,128 @@ erDiagram
 
 ---
 
-## 🟢 일정 수정
+# 📅 일정 전체 조회 (페이징)
 
-### Request
+### GET /schedules?page=0&size=10
 
-* **Method:** PATCH
-* **URL:** `/schedules/{scheduleId}`
-
-```json
-{
-  "title": "과제하기",
-  "writer": "배철수",
-  "password": "12345678"
-}
-```
+- 기본 size = 10
+- 수정일 기준 내림차순 정렬
 
 ### Response
 
-* **Status Code:**
-
-  * 200 OK
-  * 400 BAD REQUEST
-  * 404 NOT FOUND
-
 ```json
 {
-  "scheduleId": 1,
-  "title": "과제하기",
-  "content": "일정 관리 앱 구현하기",
-  "writer": "배철수",
-  "createdAt": "2026-02-04T19:13:35.036846",
-  "modifiedAt": "2026-02-05T19:13:35.036846"
+  "content": [
+    {
+      "scheduleId": 1,
+      "title": "과제하기",
+      "content": "JPA 공부",
+      "commentCount": 2,
+      "userName": "철수",
+      "createdAt": "2026-02-05T19:13:35",
+      "modifiedAt": "2026-02-05T19:13:35"
+    }
+  ],
+  "page": 0,
+  "size": 10,
+  "totalElements": 1,
+  "totalPages": 1
 }
 ```
 
 ---
 
-## 🟢 일정 삭제
+# 📅 일정 수정
 
-### Request
-
-* **Method:** DELETE
-* **URL:** `/schedules/{scheduleId}`
+### PATCH /schedules/{scheduleId}
 
 ```json
 {
-  "password": "12345678"
+  "title": "과제 끝내기"
 }
 ```
 
-### Response
+---
 
-* **Status Code:**
+# 📅 일정 삭제
 
-  * 204 NO CONTENT
-  * 400 BAD REQUEST
-  * 404 NOT FOUND
+### DELETE /schedules/{scheduleId}
+
+- 세션 인증 필요
 
 ---
 
-## 🧠 프로젝트 설명
+# 💬 댓글 생성
 
-이 프로젝트는 **Spring Boot 기반의 일정 관리 애플리케이션**으로,
-일정을 생성·조회·수정·삭제할 수 있으며 각 일정에는 댓글을 작성할 수 있습니다.
+### POST /schedules/{scheduleId}/comments
 
-### ✨ 주요 특징
-
-* 일정과 댓글의 1:N 관계 모델링
-* 비밀번호 기반 수정/삭제 검증
-* 일정 단건 조회 시 댓글 목록 포함
-* 댓글 최대 10개 제한 (비즈니스 로직)
-* 전역 예외 처리(Global Exception Handler) 적용
-* 입력값 검증 로직을 Service 계층에서 명시적으로 처리
-
-### 🛠 기술 스택
-
-* Java 17
-* Spring Boot
-* Spring Data JPA
-* MySQL
-* Lombok
-
----
-
-## ✅ 정리
-
-> 이 프로젝트는
-> **CRUD 기본기 + REST API 설계 + 예외 처리 + 비즈니스 규칙 처리**를
-> 종합적으로 연습하기 위한 일정 관리 애플리케이션입니다.
-
+```json
+{
+  "comment": "좋은 일정입니다."
+}
 ```
 
 ---
 
+# 💬 댓글 전체 조회
+
+### GET /schedules/{scheduleId}/comments
+
+---
+
+# 💬 댓글 수정
+
+### PATCH /schedules/{scheduleId}/comments/{commentId}
+
+---
+
+# 💬 댓글 삭제
+
+### DELETE /schedules/{scheduleId}/comments/{commentId}
+
+---
+
+# 📌 예외 처리
+
+- @RestControllerAdvice 적용
+- Validation 에러 메시지 커스터마이징
+- 존재하지 않는 리소스 → 404
+- 권한 없음 → 403
+- 입력 오류 → 400
+
+---
+
+# 📌 기술 스택
+
+- Java 17
+- Spring Boot
+- Spring Data JPA
+- MySQL
+- BCrypt
+- Lombok
+
+---
+
+# 📌 학습 포인트
+
+- JPA 연관관계 매핑 (ManyToOne)
+- N+1 문제 인식
+- Pageable + Page 구조 이해
+- DTO 분리 설계
+- 세션 기반 인증 흐름
+- 비밀번호 암호화 전략
+- Global Exception Handling
+
+---
+
+# ✅ 최종 정리
+
+이 프로젝트는 단순 CRUD 과제가 아니라
+
+- 계층형 아키텍처 이해
+- ORM 사용 감각
+- 인증 흐름 설계
+- API 설계 경험
+- 실무형 페이징 처리
+
+를 경험하기 위한 확장형 일정 관리 애플리케이션입니다.
