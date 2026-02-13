@@ -4,7 +4,6 @@ import com.scheduleapp.schedul.dto.*;
 import com.scheduleapp.schedul.service.ScheduleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -60,7 +59,7 @@ public class ScheduleController {
 
     // 페이지
     @GetMapping("/schedules/page")
-    public ResponseEntity<Page<GetPageScheduleResponse>> getPage(
+    public ResponseEntity<PageResponse<GetPageScheduleResponse>> getPage(
             @PageableDefault(
                     size = 10,
                     sort = "modifiedAt",

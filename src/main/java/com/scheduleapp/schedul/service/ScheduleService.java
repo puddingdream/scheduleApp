@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort;
 
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -96,17 +98,39 @@ public class ScheduleService {
 
     //페이지 조회
     @Transactional(readOnly = true)
-    public Page<GetPageScheduleResponse> getPageSchedule(Pageable pageable) {
+    public PageResponse<GetPageScheduleResponse> getPageSchedule(Pageable pageable) {
         Pageable fixed = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 Sort.by("modifiedAt").descending()
         );
-        Page<Schedule> page = scheduleRepository.findAllByOrderByModifiedAtDesc(fixed);
-        return page.map(schedule -> GetPageScheduleResponse.of(
-                schedule,
-                commentRepository.countBySchedule_ScheduleId(schedule.getScheduleId())
-        ));
+        Page<Schedule> result = scheduleRepository.findAllByOrderByModifiedAtDesc(fixed);
+        List<Long> ids = result.getContent().stream()
+                .map(Schedule::getScheduleId)
+                .toList();
+
+        Map<Long, Long> countMap = ids.isEmpty()
+                ? Map.of()
+                : commentRepository.countByScheduleIds(ids).stream()
+                .collect(Collectors.toMap(
+                        ScheduleCommentCount::getScheduleId,
+                        ScheduleCommentCount::getCount
+                ));
+
+        List<GetPageScheduleResponse> content = result.getContent().stream()
+                .map(schedule -> GetPageScheduleResponse.of(
+                        schedule,
+                        Math.toIntExact(countMap.getOrDefault(schedule.getScheduleId(), 0L))
+                ))
+                .toList();
+
+        return new PageResponse<>(
+                content,
+                result.getNumber(),
+                result.getSize(),
+                result.getTotalElements(),
+                result.getTotalPages()
+        );
     }
 
 
